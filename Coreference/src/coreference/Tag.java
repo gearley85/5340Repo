@@ -55,4 +55,13 @@ public class Tag {
 	public void setRef(String lRef){
 		 ref = lRef;
 	 }
+	
+	/*
+	 *  Overwritten ToString method
+	 */
+	@Override
+	public String toString()
+	{
+		return "";
+	}
 }

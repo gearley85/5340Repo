@@ -1,5 +1,11 @@
 package coreference;
 
+/**
+ * 
+ * @author Gavin Earley & Adam Hartvigsen
+ * Final Project
+ *
+ */
 public class Coreference {
 
 	/**
