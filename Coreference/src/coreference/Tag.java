@@ -4,6 +4,9 @@
  */
 package coreference;
 
+/** 
+ * @author Gavin Earley & Adam Hartvigsen
+ */
 public class Tag {
 	private String id;
 	private String np;
