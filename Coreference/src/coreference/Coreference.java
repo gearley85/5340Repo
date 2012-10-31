@@ -28,8 +28,7 @@ public class Coreference {
 	 * @param args
 	 */
 	public static String directory;
-	//No generics
-		List currCoRefs = new ArrayList<Tag>();
+	static ArrayList<Tag> currCoRefs;
 		static Document dom;
 	
 	public static void main(String[] args) {
@@ -64,6 +63,10 @@ public class Coreference {
 		
 	}
 	
+	/**
+	 * Parses the xml file and creates a DOM object model
+	 * @param fileName
+	 */
 	private static void parseXmlFile(String fileName){
 		//get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -76,7 +79,6 @@ public class Coreference {
 			//parse using builder to get DOM representation of the XML file
 			dom = db.parse(fileName);
 			
-
 		}catch(ParserConfigurationException pce) {
 			pce.printStackTrace();
 		}catch(SAXException se) {
@@ -86,29 +88,96 @@ public class Coreference {
 		}
 	}
 	
-	public static void processFile(String file)
-	{
-		//open the file and read each line
-		try
-		{
-			//read each line of current file
-			ReadFile currentFile = new ReadFile(file);
-			String[] currentFileArray = currentFile.OpenFile();
-			
-			for(int i=0; i<currentFileArray.length; i++)
-			{
-				parseXmlFile(currentFileArray[i]);
+	/**
+	 * Parses the created DOM object and creates Tag objects
+	 * Adds the Tag objecst to our currCoRefs list
+	 */
+	private static void parseDocument(){
+		//get the root elememt
+		Element docEle = dom.getDocumentElement();
+		
+		//get a nodelist of <COREF> elements
+		NodeList nl = docEle.getElementsByTagName("COREF");
+		if(nl != null && nl.getLength() > 0) {
+			for(int i = 0 ; i < nl.getLength();i++) {
+				
+				//get the Coref element
+				Element el = (Element)nl.item(i);
+				
+				//get the Employee object
+				Tag tempTag = getTag(el);
+				
+				//add it to list
+				currCoRefs.add(tempTag);
 			}
 		}
-		catch (IOException e )
-		{
-			System.out.println(e.getMessage());
-			
-		}
-		
-		//while looping through each line do what we need to do
 	}
 	
+	/**
+	 * Creates and returns a TAG element
+	 * @param coEl
+	 * @return
+	 */
+	private static Tag getTag(Element coEl)
+	{
+		String stringID = coEl.getAttribute("ID");
+		
+		String phrase = getNP(coEl);
+		Tag tag = new Tag(stringID,phrase);
+		return tag;
+		
+	}
+	
+	/**
+	 * Grabs the Noun phrase of the given Coref tag
+	 * @param coEl
+	 * @return
+	 */
+	private static String getNP(Element coEl)
+	{
+		String textVal = null;
+		NodeList nl = coEl.getElementsByTagName("COREF");
+		if(nl != null && nl.getLength() > 0) {
+			Element el = (Element)nl.item(0);
+			textVal = el.getFirstChild().getNodeValue();
+		}
+
+		return textVal;
+		
+	}
+	
+	/**
+	 * Process the xml in the given file
+	 * @param file
+	 */
+	public static void processFile(String file)
+	{
+		//reset currCoRefs for each file
+		currCoRefs = new ArrayList<Tag>();
+		
+		//process Xml
+		parseXmlFile(file);
+		
+		//parse the xml out of that file
+		parseDocument();
+		
+		//Do String matching
+		
+		//Run POS tagging
+		
+		//Print out our output to a file
+		
+		
+	}
+	
+
+	
+	/**
+	 * Process the output for each file
+	 * @param tag
+	 * @param fileID
+	 * @throws Exception
+	 */
 	public static void printOutput(Tag tag, int fileID) throws Exception{
 		
 		PrintWriter pw = new PrintWriter(new FileWriter(directory+fileID+".response"));
