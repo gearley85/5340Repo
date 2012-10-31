@@ -30,8 +30,9 @@ public class Coreference {
 	public static String directory;
 	static ArrayList<Tag> currCoRefs;
 		static Document dom;
+	public static String fileID;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		//grab cmd line arguement
 		if(args.length !=2 ) {
 			  System.err.println("Not enough files, exactly 2 required");
@@ -51,7 +52,9 @@ public class Coreference {
 			//loop through our list and process each file
 			for(int i=0; i<listArray.length; i++)
 			{
-				processFile(listArray[i]);
+				String temp = listArray[i];
+				String fileNum = temp.substring(0, (temp.indexOf('.')));
+				processFile(listArray[i],fileNum);
 			}
 			
 		}
@@ -149,8 +152,9 @@ public class Coreference {
 	/**
 	 * Process the xml in the given file
 	 * @param file
+	 * @throws Exception 
 	 */
-	public static void processFile(String file)
+	public static void processFile(String file, String fileNum) throws Exception
 	{
 		//reset currCoRefs for each file
 		currCoRefs = new ArrayList<Tag>();
@@ -159,17 +163,37 @@ public class Coreference {
 		parseXmlFile(file);
 		
 		//parse the xml out of that file
+		//and put into currCoRefs list
 		parseDocument();
 		
 		//Do String matching
-		
+		stringMatcher();
 		//Run POS tagging
+		posTagger();
 		
 		//Print out our output to a file
-		
+		printOutput(currCoRefs,fileNum);
 		
 	}
 	
+	
+	/**
+	 * Do string matching for the given corefs
+	 */
+	private static void stringMatcher()
+	{
+		
+	}
+	
+	
+	/**
+	 * Tag the parts of speech to see if we can 
+	 * do some additional coreferencing
+	 */
+	private static void posTagger()
+	{
+		
+	}
 
 	
 	/**
@@ -178,7 +202,7 @@ public class Coreference {
 	 * @param fileID
 	 * @throws Exception
 	 */
-	public static void printOutput(Tag tag, int fileID) throws Exception{
+	public static void printOutput(ArrayList<Tag> list, String fileID) throws Exception{
 		
 		PrintWriter pw = new PrintWriter(new FileWriter(directory+fileID+".response"));
 	   
