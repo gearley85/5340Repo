@@ -168,7 +168,7 @@ public class Coreference {
 		parseDocument();
 		
 		//Do String matching
-		stringMatcher();
+		stringMatcher(file);
 		//Run POS tagging
 		posTagger();
 		
@@ -181,8 +181,9 @@ public class Coreference {
 	/**
 	 * Do string matching for the given corefs
 	 */
-	private static void stringMatcher()
+	private static void stringMatcher(String file)
 	{
+		//loop through file line by line and see what lines up on the corefs
 		
 	}
 	
