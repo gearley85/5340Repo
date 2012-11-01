@@ -65,6 +65,6 @@ public class Tag {
 	@Override
 	public String toString()
 	{
-		return "";
+		return "<COREF ID=\""+getId()+"\" REF=\""+getRef()+"\">"+getNp()+"</COREF>"+"\n";
 	}
 }

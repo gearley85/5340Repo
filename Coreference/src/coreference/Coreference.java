@@ -139,11 +139,12 @@ public class Coreference {
 	private static String getNP(Element coEl)
 	{
 		String textVal = null;
-		NodeList nl = coEl.getElementsByTagName("COREF");
-		if(nl != null && nl.getLength() > 0) {
-			Element el = (Element)nl.item(0);
-			textVal = el.getFirstChild().getNodeValue();
-		}
+		//NodeList nl = coEl.getElementsByTagName("COREF");
+		textVal=coEl.getTextContent();
+		//if(nl != null && nl.getLength() > 0) {
+			//Element el = (Element)nl.item(0);
+		//	textVal = el.getFirstChild().getNodeValue();
+		//}
 
 		return textVal;
 		
@@ -206,7 +207,11 @@ public class Coreference {
 		
 		PrintWriter pw = new PrintWriter(new FileWriter(directory+fileID+".response"));
 	   
-	      pw.print("<COREF ID=");
+		for(Tag t : list)
+		{
+			pw.print(t.toString());
+		}
+	      //pw.print("<COREF ID=");
 	     
 	    pw.println();
 	    pw.close(); 
