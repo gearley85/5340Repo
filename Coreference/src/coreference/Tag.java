@@ -1,4 +1,4 @@
-/*
+/**
  * A tag consists of an id, noun phrase, and reference. The reference refers to the id of the noun 
  * phrases antecedent.
  */
@@ -7,64 +7,78 @@ package coreference;
 /** 
  * @author Gavin Earley & Adam Hartvigsen
  */
-public class Tag {
+public class Tag 
+{
 	private String id;
 	private String np;
 	private String ref;
 	
-	/*
+	/**
 	 * Constructor sets the values for id, np, and ref. ref is initially set to null.
 	 * 
-	 * @param lId, lNp The coreferences id and noun phrase,
+	 * @param lId The coreference id 
+	 * @param lNp The coreference noun phrase
 	 */
-	public Tag(String lId, String lNp){
+	public Tag(String lId, String lNp)
+	{
 		id = lId;
 		np = lNp;
 		ref = null;
 	}
 	
-	/*
+	/**
 	 * Returns the id string
 	 * 
 	 * @return id 
 	 */
-	public String getId(){
+	public String getId()
+	{
 		return id;
 	}
 	
-	/*
+	/**
 	 * Returns the np string
 	 * 
 	 * @return np
 	 */
-	public String getNp(){
+	public String getNp()
+	{
 		return np;
 	}
 	
-	/*
+	/**
 	 * Returns the ref string
 	 * 
 	 *  @return ref
 	 */
-	public String getRef(){
+	public String getRef()
+	{
 		return ref;
 	}
 	
-	/*
+	/**
 	 * Sets the ref string to a new string
 	 * 
 	 * @param lRef new reference
 	 */
-	public void setRef(String lRef){
+	public void setRef(String lRef)
+	{
 		 ref = lRef;
-	 }
+	}
 	
-	/*
+	/**
 	 *  Overwritten ToString method
 	 */
 	@Override
 	public String toString()
 	{
-		return "<COREF ID=\""+getId()+"\" REF=\""+getRef()+"\">"+getNp()+"</COREF>"+"\n";
+		if(ref == null)
+		{
+			return "<COREF ID=\""+id+"\">"+np+"</COREF>"+"\n";
+		}
+		else
+		{
+			return "<COREF ID=\""+id+"\" REF=\""+ref+"\">"+np+"</COREF>"+"\n";
+		}
 	}
 }

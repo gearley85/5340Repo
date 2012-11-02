@@ -4,8 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+//import java.util.Iterator;
+//import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,31 +17,34 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
+ * Final Project
  * 
  * @author Gavin Earley & Adam Hartvigsen
- * Final Project
- *
  */
-public class Coreference {
-
-	/**
-	 * @param args
-	 */
-	public static String directory;
-	static ArrayList<Tag> currCoRefs;
-		static Document dom;
+public class Coreference 
+{
+	//Global Variables
+	private static String directory;
+	private static ArrayList<Tag> currCoRefs;
+	private static Document dom;
 	public static String fileID;
 	
-	public static void main(String[] args) throws Exception {
+	/**
+	 * Main program function
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) throws Exception 
+	{
 		//grab cmd line arguement
-		if(args.length !=2 ) {
-			  System.err.println("Not enough files, exactly 2 required");
-			  System.exit(1);
-			}
+		if(args.length !=2 ) 
+		{
+			System.err.println("Not enough files, exactly 2 required");
+			System.exit(1);
+		}
 
-
-		String inputList= args[0]; //input list file
-		 directory =args[1]; //directory for output files
+		String inputList = args[0]; //input list file
+		directory = args[1]; //directory for output files
 
 		try
 		{
@@ -61,32 +64,37 @@ public class Coreference {
 		catch (IOException e )
 		{
 			System.out.println(e.getMessage());
-			
 		}
-		
 	}
 	
 	/**
 	 * Parses the xml file and creates a DOM object model
 	 * @param fileName
 	 */
-	private static void parseXmlFile(String fileName){
+	private static void parseXmlFile(String fileName)
+	{
 		//get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		
-		try {
-			
+		try 
+		{	
 			//Using factory get an instance of document builder
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			
 			//parse using builder to get DOM representation of the XML file
 			dom = db.parse(fileName);
 			
-		}catch(ParserConfigurationException pce) {
+		}
+		catch(ParserConfigurationException pce) 
+		{
 			pce.printStackTrace();
-		}catch(SAXException se) {
+		}
+		catch(SAXException se) 
+		{
 			se.printStackTrace();
-		}catch(IOException ioe) {
+		}
+		catch(IOException ioe) 
+		{
 			ioe.printStackTrace();
 		}
 	}
@@ -95,19 +103,21 @@ public class Coreference {
 	 * Parses the created DOM object and creates Tag objects
 	 * Adds the Tag objecst to our currCoRefs list
 	 */
-	private static void parseDocument(){
+	private static void parseDocument()
+	{
 		//get the root elememt
 		Element docEle = dom.getDocumentElement();
 		
 		//get a nodelist of <COREF> elements
 		NodeList nl = docEle.getElementsByTagName("COREF");
-		if(nl != null && nl.getLength() > 0) {
-			for(int i = 0 ; i < nl.getLength();i++) {
-				
+		if(nl != null && nl.getLength() > 0) 
+		{
+			for(int i = 0 ; i < nl.getLength();i++) 
+			{	
 				//get the Coref element
 				Element el = (Element)nl.item(i);
 				
-				//get the Employee object
+				//get the Tag object
 				Tag tempTag = getTag(el);
 				
 				//add it to list
@@ -128,7 +138,6 @@ public class Coreference {
 		String phrase = getNP(coEl);
 		Tag tag = new Tag(stringID,phrase);
 		return tag;
-		
 	}
 	
 	/**
@@ -138,16 +147,7 @@ public class Coreference {
 	 */
 	private static String getNP(Element coEl)
 	{
-		String textVal = null;
-		//NodeList nl = coEl.getElementsByTagName("COREF");
-		textVal=coEl.getTextContent();
-		//if(nl != null && nl.getLength() > 0) {
-			//Element el = (Element)nl.item(0);
-		//	textVal = el.getFirstChild().getNodeValue();
-		//}
-
-		return textVal;
-		
+		return coEl.getTextContent();	
 	}
 	
 	/**
@@ -173,22 +173,19 @@ public class Coreference {
 		posTagger();
 		
 		//Print out our output to a file
-		printOutput(currCoRefs,fileNum);
-		
+		printOutput(currCoRefs,fileNum);	
 	}
 	
 	
 	/**
 	 * Do string matching for the given corefs
+	 * 
+	 * @param file
 	 */
 	private static void stringMatcher(String file)
 	{
 		//loop through file line by line and see what lines up on the corefs
-		
-		
-		
 	}
-	
 	
 	/**
 	 * Tag the parts of speech to see if we can 
@@ -198,7 +195,6 @@ public class Coreference {
 	{
 		
 	}
-
 	
 	/**
 	 * Process the output for each file
@@ -206,18 +202,16 @@ public class Coreference {
 	 * @param fileID
 	 * @throws Exception
 	 */
-	public static void printOutput(ArrayList<Tag> list, String fileID) throws Exception{
-		
+	public static void printOutput(ArrayList<Tag> list, String fileID) throws Exception
+	{	
 		PrintWriter pw = new PrintWriter(new FileWriter(directory+fileID+".response"));
 	   
 		for(Tag t : list)
 		{
 			pw.print(t.toString());
 		}
-	      //pw.print("<COREF ID=");
 	     
 	    pw.println();
 	    pw.close(); 
 	}
-
 }

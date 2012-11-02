@@ -11,7 +11,7 @@ public class ReadFile {
 	//Global variable
 	private String path;
 	
-	/*
+	/**
 	 * Constructor Sets global variable path to file_path
 	 * 
 	 * @param file_path name of the file to read in.
@@ -34,9 +34,7 @@ public class ReadFile {
 		int numbLines = readLines();
 		String[] textData = new String[numbLines];
 		
-		int i;
-
-		for(i=0; i<numbLines; i++)
+		for(int i=0; i<numbLines; i++)
 		{
 			String temp=textReader.readLine();
 			if(temp==null)
@@ -47,20 +45,16 @@ public class ReadFile {
 			{
 				if(!temp.isEmpty()&&!(temp.trim().equals(""))&&!(temp.trim().equals("\n"))&&temp!=null)
 				{
-				textData[i]=temp;
+					textData[i]=temp;
 				}
 			}
 		}
 		
-		
 		textReader.close();
-		
-		
-		
 		return textData;
 	}
 	
-	/*
+	/**
 	 * Returns the number of lines contained in the path file.
 	 * 
 	 * @return numbLines the number of lines in path file
@@ -78,9 +72,7 @@ public class ReadFile {
 		}
 		
 		bf.close();
-		
 		return numbLines;
 	}
-	
 }
 
