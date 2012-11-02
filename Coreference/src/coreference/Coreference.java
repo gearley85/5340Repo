@@ -185,6 +185,8 @@ public class Coreference {
 	{
 		//loop through file line by line and see what lines up on the corefs
 		
+		
+		
 	}
 	
 	
