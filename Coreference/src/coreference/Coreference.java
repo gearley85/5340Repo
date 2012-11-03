@@ -26,6 +26,7 @@ public class Coreference
 	//Global Variables
 	private static String directory;
 	private static ArrayList<Tag> currCoRefs;
+	private static ArrayList<String> npChunks;
 	private static Document dom;
 	public static String fileID;
 	
@@ -159,7 +160,8 @@ public class Coreference
 	{
 		//reset currCoRefs for each file
 		currCoRefs = new ArrayList<Tag>();
-		
+		npChunks = new ArrayList<String>();
+
 		//process Xml
 		parseXmlFile(file);
 		
@@ -167,34 +169,70 @@ public class Coreference
 		//and put into currCoRefs list
 		parseDocument();
 		
+		//NP chunking, throw into chunk arraylist
+		chunker(file);
+		
 		//Do String matching
-		stringMatcher(file);
-		//Run POS tagging
-		posTagger();
+		stringMatcher();
+	
+		//Try to match Corefs
+		coRefer();
 		
 		//Print out our output to a file
 		printOutput(currCoRefs,fileNum);	
 	}
 	
 	
-	/**
-	 * Do string matching for the given corefs
-	 * 
-	 * @param file
-	 */
-	private static void stringMatcher(String file)
-	{
-		//loop through file line by line and see what lines up on the corefs
-	}
 	
 	/**
-	 * Tag the parts of speech to see if we can 
-	 * do some additional coreferencing
+	 * Divide the file into np chunks
+	 * @param file
 	 */
-	private static void posTagger()
+	private static void chunker(String file)
 	{
 		
 	}
+	
+	
+	
+	/**
+	 * Do string matching for the given corefs once we have the given chunks
+	 * 
+	 * @param file
+	 */
+	private static void stringMatcher()
+	{
+		String id="A";
+		//loop through chunks and see what lines up on the corefs that were given
+		for(String np :npChunks)
+		{
+			for(Tag t: currCoRefs)
+			{
+				//create new corefs if we have a match on np's not in corefs already
+				if(np.contains(t.getNp()))
+				{
+					//increment our ids
+					if(!(id.equals("A")))
+					{
+						id.replace(id.charAt(0), (char) (id.charAt(0)+1));
+					}
+					currCoRefs.add(new Tag(id,np));
+				}
+			}
+		}
+		
+		
+	}
+	
+	/**
+	 * Begin to try and match coreferences
+	 */
+	private static void coRefer()
+	{
+		
+	}
+	
+	
 	
 	/**
 	 * Process the output for each file
