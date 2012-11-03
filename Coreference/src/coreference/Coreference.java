@@ -216,7 +216,9 @@ public class Coreference
 					{
 						id.replace(id.charAt(0), (char) (id.charAt(0)+1));
 					}
+					//add in the new coref Tag and associate existing with the ID for the new tag
 					currCoRefs.add(new Tag(id,np));
+					t.setRef(id);
 				}
 			}
 		}
