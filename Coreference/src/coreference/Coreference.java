@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -108,7 +109,7 @@ public class Coreference
 	{
 		//get the root elememt
 		Element docEle = dom.getDocumentElement();
-		
+		System.out.println(docEle.toString());
 		//get a nodelist of <COREF> elements
 		NodeList nl = docEle.getElementsByTagName("COREF");
 		if(nl != null && nl.getLength() > 0) 
@@ -124,7 +125,15 @@ public class Coreference
 				//add it to list
 				currCoRefs.add(tempTag);
 			}
+			
 		}
+		Node categories = docEle.getElementsByTagName("COREF").item(0);
+		NodeList categorieslist = categories.getChildNodes();
+		while (categorieslist.getLength() > 0) {
+		    Node node = categorieslist.item(0);
+		    node.getParentNode().removeChild(node);
+		}
+		
 	}
 	
 	/**
@@ -136,8 +145,8 @@ public class Coreference
 	{
 		String stringID = coEl.getAttribute("ID");
 		
-		String phrase = getNP(coEl);
-		Tag tag = new Tag(stringID,phrase);
+		//String phrase = getNP(coEl);
+		Tag tag = new Tag(stringID,coEl.getTextContent());
 		return tag;
 	}
 	
@@ -146,10 +155,10 @@ public class Coreference
 	 * @param coEl
 	 * @return
 	 */
-	private static String getNP(Element coEl)
-	{
-		return coEl.getTextContent();	
-	}
+	//private static String getNP(Element coEl)
+	//{
+		//return coEl.getTextContent();	
+	//}
 	
 	/**
 	 * Process the xml in the given file
