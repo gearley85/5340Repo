@@ -1,4 +1,4 @@
-<COREF ID="3">Trans World Airlines</COREF>
+<TXT><COREF ID="3">Trans World Airlines</COREF>
 <COREF ID="4">additional shares of USAir Group Inc.</COREF>
 <COREF ID="6">The order</COREF>
 <COREF ID="7">USAir</COREF>
@@ -169,4 +169,4 @@
 <COREF ID="198">it</COREF>
 <COREF ID="199">department</COREF>
 <COREF ID="200">Texas Air</COREF>
-
+</TXT>

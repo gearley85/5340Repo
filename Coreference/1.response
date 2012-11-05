@@ -1,4 +1,4 @@
-<COREF ID="3">Eastern Airlines</COREF>
+<TXT><COREF ID="3">Eastern Airlines</COREF>
 <COREF ID="6">Feb. 3</COREF>
 <COREF ID="8">they</COREF>
 <COREF ID="9">they</COREF>
@@ -16,4 +16,4 @@
 <COREF ID="27">the carrier</COREF>
 <COREF ID="28">Mr. Callahan</COREF>
 <COREF ID="29">it</COREF>
-
+</TXT>

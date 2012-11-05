@@ -3,6 +3,7 @@ package coreference;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 //import java.util.Iterator;
 //import java.util.List;
@@ -10,6 +11,11 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -58,7 +64,7 @@ public class Coreference
 			for(int i=0; i<listArray.length; i++)
 			{
 				String temp = listArray[i];
-				String fileNum = temp.substring(0, (temp.indexOf('.')));
+				String fileNum = temp.substring(temp.lastIndexOf('/')+1 , (temp.indexOf('.')));
 				processFile(listArray[i],fileNum);
 			}
 			
@@ -109,7 +115,7 @@ public class Coreference
 	{
 		//get the root elememt
 		Element docEle = dom.getDocumentElement();
-		System.out.println(docEle.toString());
+		
 		//get a nodelist of <COREF> elements
 		NodeList nl = docEle.getElementsByTagName("COREF");
 		if(nl != null && nl.getLength() > 0) 
@@ -132,6 +138,23 @@ public class Coreference
 		while (categorieslist.getLength() > 0) {
 		    Node node = categorieslist.item(0);
 		    node.getParentNode().removeChild(node);
+		}
+		try
+		{
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+			//initialize StreamResult with File object to save to file
+			StreamResult result = new StreamResult(new StringWriter());
+			DOMSource source = new DOMSource(docEle);
+			transformer.transform(source, result);
+
+			String xmlString = result.getWriter().toString();
+			//System.out.println(xmlString);
+		}
+		catch(Exception e)
+		{
+			
 		}
 		
 	}
@@ -254,11 +277,13 @@ public class Coreference
 	public static void printOutput(ArrayList<Tag> list, String fileID) throws Exception
 	{	
 		PrintWriter pw = new PrintWriter(new FileWriter(directory+fileID+".response"));
+		pw.print("<TXT>");
 	   
 		for(Tag t : list)
 		{
 			pw.print(t.toString());
 		}
+		pw.print("</TXT>");
 	     
 	    pw.println();
 	    pw.close(); 
