@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 //import java.util.Iterator;
 //import java.util.List;
 
@@ -22,6 +23,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import edu.stanford.nlp.ie.AbstractSequenceClassifier;
+import edu.stanford.nlp.ie.crf.*;
+import edu.stanford.nlp.io.IOUtils;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.CoreAnnotations.AnswerAnnotation;
 
 /**
  * Final Project
@@ -206,12 +213,31 @@ public class Coreference
 		
 		//Do String matching
 		stringMatcher();
+		
+		//Run NER
+		nerFunction(file);
 	
 		//Try to match Corefs
 		coRefer();
 		
 		//Print out our output to a file
 		printOutput(currCoRefs,fileNum);	
+	}
+	
+	public static void nerFunction(String file) throws IOException
+	{
+
+	      String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
+	      AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
+	      String fileContents = IOUtils.slurpFile(file);
+	        List<List<CoreLabel>> out = classifier.classify(fileContents);
+	        for (List<CoreLabel> sentence : out) {
+	          for (CoreLabel word : sentence) {
+	        	  //throw this in a list to use later 
+	            System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
+	          }
+	        }
+
 	}
 	
 	
