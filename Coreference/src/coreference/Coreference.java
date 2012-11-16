@@ -3,7 +3,7 @@ package coreference;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
+//import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 //import java.util.Iterator;
@@ -12,23 +12,24 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+//import javax.xml.transform.OutputKeys;
+//import javax.xml.transform.Transformer;
+//import javax.xml.transform.TransformerFactory;
+//import javax.xml.transform.dom.DOMSource;
+//import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+/*
 import edu.stanford.nlp.ie.AbstractSequenceClassifier;
 import edu.stanford.nlp.ie.crf.*;
 import edu.stanford.nlp.io.IOUtils;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.CoreAnnotations.AnswerAnnotation;
+*/
 
 /**
  * Final Project
@@ -41,8 +42,10 @@ public class Coreference
 	private static String directory;
 	private static ArrayList<Tag> currCoRefs;
 	private static ArrayList<String> npChunks;
+	private static ArrayList<String> nerList;
 	private static Document dom;
 	public static String fileID;
+	private static String wholeFile;
 	
 	/**
 	 * Main program function
@@ -148,6 +151,8 @@ public class Coreference
 		}
 		try
 		{
+			//code to try and print out full xml for testing
+			/*
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
@@ -158,6 +163,8 @@ public class Coreference
 
 			String xmlString = result.getWriter().toString();
 			//System.out.println(xmlString);
+			 * 
+			 */
 		}
 		catch(Exception e)
 		{
@@ -197,9 +204,11 @@ public class Coreference
 	 */
 	public static void processFile(String file, String fileNum) throws Exception
 	{
-		//reset currCoRefs for each file
+		//reset currCoRefs  and other lists for each file
 		currCoRefs = new ArrayList<Tag>();
 		npChunks = new ArrayList<String>();
+		nerList = new ArrayList<String>();
+		wholeFile="";
 
 		//process Xml
 		parseXmlFile(file);
@@ -227,6 +236,7 @@ public class Coreference
 	public static void nerFunction(String file) throws IOException
 	{
 
+		/*
 	      String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
 	      AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
 	      String fileContents = IOUtils.slurpFile(file);
@@ -235,20 +245,58 @@ public class Coreference
 	          for (CoreLabel word : sentence) {
 	        	  //throw this in a list to use later 
 	            System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
+	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
 	          }
 	        }
+	        */
 
 	}
 	
 	
 	
 	/**
-	 * Divide the file into np chunks
+	 * Put the lines of the file into one large string, then remove the corefs
 	 * @param file
 	 */
 	private static void chunker(String file)
 	{
-		
+		try
+		{
+			//open the file
+			ReadFile openFile = new ReadFile(file);
+			String[] arrayLines = openFile.OpenFile();
+			
+			
+				//throw all lines into one ginormous string
+				StringBuilder builder = new StringBuilder();
+				for (String st: arrayLines) {
+				    builder.append(st).append(' ');
+				}
+				builder.deleteCharAt(builder.length());
+				wholeFile = builder.toString();
+				
+				//now loop through our coref list and remove them out of the giant string
+				//System.out.println(wholeFile);
+				//now loop through our coref list and remove them out of the giant string
+				for(Tag t: currCoRefs)
+				{
+					String tempTag= t.tagPrinter();
+						wholeFile=wholeFile.replace(tempTag, "");
+						//System.out.println("Take2:"+wholeFile);
+				}
+				
+				//remove "nulls"
+				wholeFile=wholeFile.replace("null", "");
+				
+				//Now add all words from wholeFile and put into the npChunks list so we can use it in the stringMatcher method below
+				
+			
+		}
+		catch (IOException e )
+		{
+			System.out.println(e.getMessage());
+			
+		}
 	}
 	
 	

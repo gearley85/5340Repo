@@ -67,6 +67,15 @@ public class Tag
 	}
 	
 	/**
+	 * Prints the corefs to a string to take them out of the file
+	 * @return
+	 */
+	public String tagPrinter()
+	{
+		return "<COREF ID=\""+id+"\">"+np+"</COREF>";
+	}
+	
+	/**
 	 *  Overwritten ToString method
 	 */
 	@Override
