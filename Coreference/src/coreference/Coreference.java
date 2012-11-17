@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 import edu.stanford.nlp.ie.AbstractSequenceClassifier;
 import edu.stanford.nlp.ie.crf.*;
 import edu.stanford.nlp.io.IOUtils;
@@ -208,7 +209,6 @@ public class Coreference
 		currCoRefs = new ArrayList<Tag>();
 		npChunks = new ArrayList<String>();
 		nerList = new ArrayList<String>();
-		wholeFile="";
 
 		//process Xml
 		parseXmlFile(file);
@@ -235,20 +235,20 @@ public class Coreference
 	
 	public static void nerFunction(String file) throws IOException
 	{
-		 String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
+
+	      String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
 	      @SuppressWarnings("unchecked")
-	      AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
+		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
 	      String fileContents = IOUtils.slurpFile(file);
 	        List<List<CoreLabel>> out = classifier.classify(fileContents);
 	        for (List<CoreLabel> sentence : out) {
 	          for (CoreLabel word : sentence) {
 	        	  //throw this in a list to use later 
-	           // System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
+	            System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
 	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
 	          }
 	        }
-	        
-	        
+	       
 
 	}
 	
@@ -273,6 +273,7 @@ public class Coreference
 				    builder.append(st).append(' ');
 				}
 				//builder.deleteCharAt(builder.length());
+
 				wholeFile = builder.toString();
 				
 				//now loop through our coref list and remove them out of the giant string
@@ -284,17 +285,21 @@ public class Coreference
 						wholeFile=wholeFile.replace(tempTag, "");
 						//System.out.println("Take2:"+wholeFile);
 				}
-				
-				//remove "nulls"
 				wholeFile=wholeFile.replace("null", "");
+				//System.out.println("Take2:"+wholeFile);
 				
 				//Now add all words from wholeFile and put into the npChunks list so we can use it in the stringMatcher method below
 				String[] parts = wholeFile.split("\\s{3,}");
 				for(String p : parts) {
 				  //System.out.println(p);
-					npChunks.add(p);
+					//if(!p.equals(" "))
+					//{
+						npChunks.add(p);
+					
+					System.out.println(p);
+					//}
 				}
-				
+
 			
 		}
 		catch (IOException e )
@@ -315,12 +320,12 @@ public class Coreference
 	{
 		String id="A";
 		//loop through chunks and see what lines up on the corefs that were given
-		for(String np :npChunks)
-		{
+		//for(String np :npChunks)
+		//{
 			for(Tag t: currCoRefs)
 			{
 				//create new corefs if we have a match on np's not in corefs already
-				if(np.contains(t.getNp()))
+				if(npChunks.contains(t.getNp()))
 				{
 					//increment our ids
 					if(!(id.equals("A")))
@@ -328,11 +333,11 @@ public class Coreference
 						id.replace(id.charAt(0), (char) (id.charAt(0)+1));
 					}
 					//add in the new coref Tag and associate existing with the ID for the new tag
-					currCoRefs.add(new Tag(id,np));
+					currCoRefs.add(new Tag(id,t.getNp()));
 					t.setRef(id);
 				}
 			}
-		}
+		//}
 		
 		
 	}
@@ -342,7 +347,6 @@ public class Coreference
 	 */
 	private static void coRefer()
 	{
-		//look through strings to try and match on them
 		
 	}
 	
