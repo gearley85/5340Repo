@@ -248,7 +248,6 @@ public class Coreference
 	          }
 	        }
 	        
-	        //now that we 
 	        
 
 	}
@@ -273,7 +272,7 @@ public class Coreference
 				for (String st: arrayLines) {
 				    builder.append(st).append(' ');
 				}
-				builder.deleteCharAt(builder.length());
+				//builder.deleteCharAt(builder.length());
 				wholeFile = builder.toString();
 				
 				//now loop through our coref list and remove them out of the giant string
@@ -290,6 +289,11 @@ public class Coreference
 				wholeFile=wholeFile.replace("null", "");
 				
 				//Now add all words from wholeFile and put into the npChunks list so we can use it in the stringMatcher method below
+				String[] parts = wholeFile.split("\\s{3,}");
+				for(String p : parts) {
+				  //System.out.println(p);
+					npChunks.add(p);
+				}
 				
 			
 		}
@@ -338,6 +342,7 @@ public class Coreference
 	 */
 	private static void coRefer()
 	{
+		//look through strings to try and match on them
 		
 	}
 	
