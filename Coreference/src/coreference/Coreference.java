@@ -235,7 +235,7 @@ public class Coreference
 	
 	public static void nerFunction(String file) throws IOException
 	{
-		 String serializedClassifier = "classifiers/english.conll.4class.distsim.crf.ser.gz";
+		 String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
 	      @SuppressWarnings("unchecked")
 	      AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
 	      String fileContents = IOUtils.slurpFile(file);
@@ -243,10 +243,12 @@ public class Coreference
 	        for (List<CoreLabel> sentence : out) {
 	          for (CoreLabel word : sentence) {
 	        	  //throw this in a list to use later 
-	            System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
+	           // System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
 	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
 	          }
 	        }
+	        
+	        //now that we 
 	        
 
 	}
