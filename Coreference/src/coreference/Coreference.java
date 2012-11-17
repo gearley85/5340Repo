@@ -23,13 +23,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-/*
+
 import edu.stanford.nlp.ie.AbstractSequenceClassifier;
 import edu.stanford.nlp.ie.crf.*;
 import edu.stanford.nlp.io.IOUtils;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.CoreAnnotations.AnswerAnnotation;
-*/
+
 
 /**
  * Final Project
@@ -235,9 +235,8 @@ public class Coreference
 	
 	public static void nerFunction(String file) throws IOException
 	{
-
-		/*
-	      String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
+		 String serializedClassifier = "classifiers/english.conll.4class.distsim.crf.ser.gz";
+	      @SuppressWarnings("unchecked")
 	      AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
 	      String fileContents = IOUtils.slurpFile(file);
 	        List<List<CoreLabel>> out = classifier.classify(fileContents);
@@ -248,7 +247,7 @@ public class Coreference
 	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
 	          }
 	        }
-	        */
+	        
 
 	}
 	
