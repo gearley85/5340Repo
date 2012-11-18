@@ -307,9 +307,16 @@ public class Coreference
 					{
 						for(int g = 0; g < prevList.size(); g++)
 						{
-							if(currList.get(k).equals(prevList.get(g)))
+							if(currList.get(k).equals(prevList.get(g)) && tempTag.getRef() == null)
 							{
-								tempTag.setRef(pig.getId());
+								if(!currList.get(k).toLowerCase().equals("the") && 
+										!currList.get(k).toLowerCase().equals("a") && 
+										!currList.get(k).toLowerCase().equals("of") &&
+										!currList.get(k).toLowerCase().equals("to") &&
+										!currList.get(k).toLowerCase().equals("for"))
+								{
+									tempTag.setRef(pig.getId());
+								}
 							}
 						}
 					}
