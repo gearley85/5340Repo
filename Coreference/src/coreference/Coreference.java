@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 //import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 //import java.util.Iterator;
 //import java.util.List;
 
@@ -75,7 +76,7 @@ public class Coreference
 			for(int i=0; i<listArray.length; i++)
 			{
 				String temp = listArray[i];
-				String fileNum = temp.substring(temp.lastIndexOf('/')+1 , (temp.indexOf('.')));
+				String fileNum = temp.substring(temp.lastIndexOf('/')+1 , (temp.lastIndexOf('.')));
 				processFile(listArray[i],fileNum);
 			}
 			
@@ -177,26 +178,14 @@ public class Coreference
 	/**
 	 * Creates and returns a TAG element
 	 * @param coEl
-	 * @return
+	 * @return tag
 	 */
 	private static Tag getTag(Element coEl)
 	{
 		String stringID = coEl.getAttribute("ID");
-		
-		//String phrase = getNP(coEl);
 		Tag tag = new Tag(stringID,coEl.getTextContent());
 		return tag;
 	}
-	
-	/**
-	 * Grabs the Noun phrase of the given Coref tag
-	 * @param coEl
-	 * @return
-	 */
-	//private static String getNP(Element coEl)
-	//{
-		//return coEl.getTextContent();	
-	//}
 	
 	/**
 	 * Process the xml in the given file
@@ -244,7 +233,7 @@ public class Coreference
 	        for (List<CoreLabel> sentence : out) {
 	          for (CoreLabel word : sentence) {
 	        	  //throw this in a list to use later 
-	            System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
+	            //System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
 	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
 	          }
 	        }
@@ -267,40 +256,43 @@ public class Coreference
 			String[] arrayLines = openFile.OpenFile();
 			
 			
-				//throw all lines into one ginormous string
-				StringBuilder builder = new StringBuilder();
-				for (String st: arrayLines) {
-				    builder.append(st).append(' ');
-				}
-				//builder.deleteCharAt(builder.length());
+			//throw all lines into one ginormous string
+			StringBuilder builder = new StringBuilder();
+			for (String st: arrayLines) {
+			    builder.append(st).append(' ');
+			}
+			//builder.deleteCharAt(builder.length());
 
-				wholeFile = builder.toString();
+			wholeFile = builder.toString();
 				
-				//now loop through our coref list and remove them out of the giant string
-				//System.out.println(wholeFile);
-				//now loop through our coref list and remove them out of the giant string
-				for(Tag t: currCoRefs)
-				{
-					String tempTag= t.tagPrinter();
-						wholeFile=wholeFile.replace(tempTag, "");
-						//System.out.println("Take2:"+wholeFile);
-				}
-				wholeFile=wholeFile.replace("null", "");
+			//now loop through our coref list and remove them out of the giant string
+			//System.out.println(wholeFile);
+			//now loop through our coref list and remove them out of the giant string
+			for(Tag t: currCoRefs)
+			{
+				String tempTag= t.tagPrinter();
+				wholeFile=wholeFile.replace(tempTag, "");
 				//System.out.println("Take2:"+wholeFile);
+			}
+			wholeFile=wholeFile.replace("null", "");
+			//System.out.println("Take2:"+wholeFile);
 				
-				//Now add all words from wholeFile and put into the npChunks list so we can use it in the stringMatcher method below
-				String[] parts = wholeFile.split("\\s{3,}");
-				for(String p : parts) {
-				  //System.out.println(p);
-					//if(!p.equals(" "))
-					//{
-						npChunks.add(p);
-					
-					System.out.println(p);
-					//}
-				}
-
-			
+			//Now add all words from wholeFile and put into the npChunks list so we can use it 
+			//in the stringMatcher method below
+			//String[] parts = wholeFile.split("\\s{3,}");
+			//for(String p : parts) {
+				//System.out.println(p);
+				//if(!p.equals(" "))
+				//{
+			StringTokenizer parser = new StringTokenizer(wholeFile, " //");
+			while(parser.hasMoreTokens())
+			{
+				String temp = parser.nextToken();
+				npChunks.add(temp);
+			}					
+				//System.out.println(p);
+				//}
+			//}
 		}
 		catch (IOException e )
 		{

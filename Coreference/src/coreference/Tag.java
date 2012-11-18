@@ -4,6 +4,9 @@
  */
 package coreference;
 
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
 /** 
  * @author Gavin Earley & Adam Hartvigsen
  */
@@ -44,6 +47,22 @@ public class Tag
 	public String getNp()
 	{
 		return np;
+	}
+	
+	/**
+	 * Returns a list of the words in the noun phrase String.
+	 * 
+	 * @return npList
+	 */
+	public ArrayList<String> getNPList()
+	{
+		ArrayList<String> npList = new ArrayList<String>();
+		StringTokenizer parser = new StringTokenizer(np, " //");
+		while(parser.hasMoreTokens())
+		{
+			npList.add(parser.nextToken());
+		}
+		return npList;
 	}
 	
 	/**

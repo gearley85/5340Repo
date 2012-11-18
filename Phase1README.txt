@@ -2,12 +2,12 @@ Gavin Earley and Adam Hartvigsen's Final Project
 
 How to Compile/Run my code:
 Untar the Coreference file.
-First navigate to my Coreference/src directory.  
-Then run the following commands to compile and run my code.
+First navigate to my Coreference/src directory. Make sure that the lib folder is in the 
+src folder. Then run the following commands to compile and run my code.
 
-COMPILE: javac -cp . coreference/Coreference.java 
+COMPILE: javac -cp '.:lib/stanford-ner.jar' coreference/Coreference.java 
 
-RUN: java -cp . coreference/Coreference <listfile> <responsedir>
+RUN: java -cp '.:lib/stanford-ner.jar' coreference/Coreference <input.txt> <output path>
 
 Cade Machine primarily ran on:
 lab1-13.eng.utah.edu
