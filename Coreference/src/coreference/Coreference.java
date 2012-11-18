@@ -88,6 +88,41 @@ public class Coreference
 	}
 	
 	/**
+	 * Process the xml in the given file
+	 * @param file
+	 * @throws Exception 
+	 */
+	public static void processFile(String file, String fileNum) throws Exception
+	{
+		//reset currCoRefs  and other lists for each file
+		currCoRefs = new ArrayList<Tag>();
+		npChunks = new ArrayList<String>();
+		nerList = new ArrayList<String>();
+
+		//process Xml
+		parseXmlFile(file);
+		
+		//parse the xml out of that file
+		//and put into currCoRefs list
+		parseDocument();
+		
+		//NP chunking, throw into chunk arraylist
+		chunker(file);
+		
+		//Do String matching
+		stringMatcher();
+		
+		//Run NER
+		nerFunction(file);
+	
+		//Try to match Corefs
+		coRefer();
+		
+		//Print out our output to a file
+		printOutput(currCoRefs,fileNum);	
+	}
+	
+	/**
 	 * Parses the xml file and creates a DOM object model
 	 * @param fileName
 	 */
@@ -188,62 +223,6 @@ public class Coreference
 	}
 	
 	/**
-	 * Process the xml in the given file
-	 * @param file
-	 * @throws Exception 
-	 */
-	public static void processFile(String file, String fileNum) throws Exception
-	{
-		//reset currCoRefs  and other lists for each file
-		currCoRefs = new ArrayList<Tag>();
-		npChunks = new ArrayList<String>();
-		nerList = new ArrayList<String>();
-
-		//process Xml
-		parseXmlFile(file);
-		
-		//parse the xml out of that file
-		//and put into currCoRefs list
-		parseDocument();
-		
-		//NP chunking, throw into chunk arraylist
-		chunker(file);
-		
-		//Do String matching
-		stringMatcher();
-		
-		//Run NER
-		nerFunction(file);
-	
-		//Try to match Corefs
-		coRefer();
-		
-		//Print out our output to a file
-		printOutput(currCoRefs,fileNum);	
-	}
-	
-	public static void nerFunction(String file) throws IOException
-	{
-
-	      String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
-	      @SuppressWarnings("unchecked")
-		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
-	      String fileContents = IOUtils.slurpFile(file);
-	        List<List<CoreLabel>> out = classifier.classify(fileContents);
-	        for (List<CoreLabel> sentence : out) {
-	          for (CoreLabel word : sentence) {
-	        	  //throw this in a list to use later 
-	            //System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
-	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
-	          }
-	        }
-	       
-
-	}
-	
-	
-	
-	/**
 	 * Put the lines of the file into one large string, then remove the corefs
 	 * @param file
 	 */
@@ -314,24 +293,42 @@ public class Coreference
 		//loop through chunks and see what lines up on the corefs that were given
 		//for(String np :npChunks)
 		//{
-			for(Tag t: currCoRefs)
+		for(Tag t: currCoRefs)
+		{
+			//create new corefs if we have a match on np's not in corefs already
+			if(npChunks.contains(t.getNp()))
 			{
-				//create new corefs if we have a match on np's not in corefs already
-				if(npChunks.contains(t.getNp()))
+				//increment our ids
+				if(!(id.equals("A")))
 				{
-					//increment our ids
-					if(!(id.equals("A")))
-					{
-						id.replace(id.charAt(0), (char) (id.charAt(0)+1));
-					}
-					//add in the new coref Tag and associate existing with the ID for the new tag
-					currCoRefs.add(new Tag(id,t.getNp()));
-					t.setRef(id);
+					id.replace(id.charAt(0), (char) (id.charAt(0)+1));
 				}
+				//add in the new coref Tag and associate existing with the ID for the new tag
+				currCoRefs.add(new Tag(id,t.getNp()));
+				t.setRef(id);
 			}
+		}
 		//}
 		
 		
+	}
+	
+	public static void nerFunction(String file) throws IOException
+	{
+		String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
+	    @SuppressWarnings("unchecked")
+		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
+	    String fileContents = IOUtils.slurpFile(file);
+	    List<List<CoreLabel>> out = classifier.classify(fileContents);
+	    for (List<CoreLabel> sentence : out) 
+	    {
+	    	for (CoreLabel word : sentence) 
+	    	{
+	    		//throw this in a list to use later 
+	            //System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
+	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
+	    	}
+	    } 
 	}
 	
 	/**
@@ -341,8 +338,6 @@ public class Coreference
 	{
 		
 	}
-	
-	
 	
 	/**
 	 * Process the output for each file
