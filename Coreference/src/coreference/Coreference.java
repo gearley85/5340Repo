@@ -290,25 +290,45 @@ public class Coreference
 	private static void stringMatcher()
 	{
 		String id="A";
-		//loop through chunks and see what lines up on the corefs that were given
-		//for(String np :npChunks)
-		//{
-		for(Tag t: currCoRefs)
+		
+		for(int i = 0; i < currCoRefs.size(); i++)
 		{
-			//create new corefs if we have a match on np's not in corefs already
-			if(npChunks.contains(t.getNp()))
+			Tag tempTag = currCoRefs.get(i);
+			if(i == 0){}
+			else
 			{
-				//increment our ids
-				if(!(id.equals("A")))
+				ArrayList<String> currList = tempTag.getNPList();
+				ArrayList<String> prevList;
+				for(int j = i-1; j > 0; j--)
 				{
-					id.replace(id.charAt(0), (char) (id.charAt(0)+1));
+					Tag pig = currCoRefs.get(j);
+					prevList = pig.getNPList();
+					for(int k = 0; k < currList.size(); k++)
+					{
+						for(int g = 0; g < prevList.size(); g++)
+						{
+							if(currList.get(k).equals(prevList.get(g)))
+							{
+								tempTag.setRef(pig.getId());
+							}
+						}
+					}
 				}
-				//add in the new coref Tag and associate existing with the ID for the new tag
-				currCoRefs.add(new Tag(id,t.getNp()));
-				t.setRef(id);
 			}
 		}
+		//create new corefs if we have a match on np's not in corefs already
+		//if(npChunks.contains(t.getNp()))
+		//{
+			//increment our ids
+			//if(!(id.equals("A")))
+			//{
+				//id.replace(id.charAt(0), (char) (id.charAt(0)+1));
+			//}
+			//add in the new coref Tag and associate existing with the ID for the new tag
+			//currCoRefs.add(new Tag(id,t.getNp()));
+			//t.setRef(id);
 		//}
+		
 		
 		
 	}
