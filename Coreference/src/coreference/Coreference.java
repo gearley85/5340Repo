@@ -116,7 +116,7 @@ public class Coreference
 		nerFunction(file);
 	
 		//Try to match Corefs
-		coRefer();
+		coReferNER();
 		
 		//Print out our output to a file
 		printOutput(currCoRefs,fileNum);	
@@ -354,6 +354,8 @@ public class Coreference
 	    		//throw this in a list to use later 
 	            //System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
 	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
+	            
+	            
 	    	}
 	    } 
 	}
@@ -361,8 +363,28 @@ public class Coreference
 	/**
 	 * Begin to try and match coreferences
 	 */
-	private static void coRefer()
+	private static void coReferNER()
 	{
+		
+		for(int i=0; i<currCoRefs.size(); i++)
+		{
+			Tag temp = currCoRefs.get(i);
+			
+			String bigWord =nerList.get(i);
+			String word =bigWord.substring(0, bigWord.indexOf("/"));
+			String classType=bigWord.substring(bigWord.indexOf("/"), bigWord.length());
+			
+			if(temp.getNp().contains(word)&&classType.equals("PERSON"))
+			{
+				
+			}
+			
+			if(temp.getNp().contains(word)&&classType.equals("ORGANIZATION"))
+			{
+				
+			}
+		}
+		
 		
 	}
 	
