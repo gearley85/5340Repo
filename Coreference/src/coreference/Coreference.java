@@ -364,26 +364,78 @@ public class Coreference
 	 * Begin to try and match coreferences
 	 */
 	private static void coReferNER()
-	{
-		
-		for(int i=0; i<currCoRefs.size(); i++)
+	{		
+		for(int i = 0; i < currCoRefs.size(); i++)
 		{
-			Tag temp = currCoRefs.get(i);
+			Tag tempTag = currCoRefs.get(i);
 			
-			String bigWord =nerList.get(i);
-			String word =bigWord.substring(0, bigWord.indexOf("/"));
-			String classType=bigWord.substring(bigWord.indexOf("/"), bigWord.length());
 			
-			if(temp.getNp().contains(word)&&classType.equals("PERSON"))
+			if(i == 0){}
+			else
 			{
-				
-			}
-			
-			if(temp.getNp().contains(word)&&classType.equals("ORGANIZATION"))
-			{
-				
+				ArrayList<String> currList = tempTag.getNPList();
+				ArrayList<String> prevList;
+				for(int j = i-1; j > 0; j--)
+				{
+					Tag pig = currCoRefs.get(j);
+					prevList = pig.getNPList();
+					for(int k = 0; k < currList.size(); k++)
+					{
+						for(int g = 0; g < prevList.size(); g++)
+						{
+							//grab word place in NERList
+							int cur=nerList.indexOf(currList.get(k));
+							int prev=nerList.indexOf(prevList.get(g));
+							String curClassType="";
+							String prevClassType="";
+							
+							
+							
+							//grab current word's info
+							if(cur>=0)
+							{
+							String bigCurWord =nerList.get(cur);
+							String curWord =bigCurWord.substring(0, bigCurWord.indexOf("/"));
+							curClassType=bigCurWord.substring(bigCurWord.indexOf("/"), bigCurWord.length());
+							}
+							
+							//grab Prev word's info
+							if(prev>=0)
+							{
+							String bigPrevWord =nerList.get(prev);
+							String prevWord =bigPrevWord.substring(0, bigPrevWord.indexOf("/"));
+							prevClassType=bigPrevWord.substring(bigPrevWord.indexOf("/"), bigPrevWord.length());
+							}
+							
+							if(curClassType.equals("PERSON")&&prevClassType.equals("PERSON") && tempTag.getRef() == null)
+							{
+								if(!currList.get(k).toLowerCase().equals("the") && 
+										!currList.get(k).toLowerCase().equals("a") && 
+										!currList.get(k).toLowerCase().equals("of") &&
+										!currList.get(k).toLowerCase().equals("to") &&
+										!currList.get(k).toLowerCase().equals("for"))
+								{
+									tempTag.setRef(pig.getId());
+								}
+							}
+							
+							if(curClassType.equals("ORGANIZATION")&&prevClassType.equals("ORGANIZATION") && tempTag.getRef() == null)
+							{
+								if(!currList.get(k).toLowerCase().equals("the") && 
+										!currList.get(k).toLowerCase().equals("a") && 
+										!currList.get(k).toLowerCase().equals("of") &&
+										!currList.get(k).toLowerCase().equals("to") &&
+										!currList.get(k).toLowerCase().equals("for"))
+								{
+									tempTag.setRef(pig.getId());
+								}
+							}
+						}
+					}
+				}
 			}
 		}
+		
 		
 		
 	}
