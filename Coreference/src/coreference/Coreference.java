@@ -373,6 +373,8 @@ public class Coreference
 			if(i == 0){}
 			else
 			{
+				int cur=0;
+				int prev=0;
 				ArrayList<String> currList = tempTag.getNPList();
 				ArrayList<String> prevList;
 				for(int j = i-1; j > 0; j--)
@@ -383,9 +385,32 @@ public class Coreference
 					{
 						for(int g = 0; g < prevList.size(); g++)
 						{
+							String curNerTemp="";
+							String prevNerTemp="";
+							
 							//grab word place in NERList
-							int cur=nerList.indexOf(currList.get(k));
-							int prev=nerList.indexOf(prevList.get(g));
+
+							for(int y=0; y<nerList.size(); y++)
+							{
+								if(nerList.get(y).contains(currList.get(k)))
+								{
+									curNerTemp=nerList.get(y);
+									//System.out.println(curNerTemp);
+								}
+								cur=nerList.indexOf(curNerTemp);
+								//System.out.println(cur);
+								
+								if(nerList.get(y).contains(prevList.get(g)))
+								{
+									prevNerTemp=nerList.get(y);
+									//System.out.println(prevNerTemp);
+								}
+								prev=nerList.indexOf(prevNerTemp);
+								//System.out.println(prev);
+								
+								
+							}
+							
 							String curClassType="";
 							String prevClassType="";
 							
