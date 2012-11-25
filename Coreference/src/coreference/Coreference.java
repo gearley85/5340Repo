@@ -3,21 +3,13 @@ package coreference;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-//import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-//import java.util.Iterator;
-//import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-//import javax.xml.transform.OutputKeys;
-//import javax.xml.transform.Transformer;
-//import javax.xml.transform.TransformerFactory;
-//import javax.xml.transform.dom.DOMSource;
-//import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -79,7 +71,6 @@ public class Coreference
 				String fileNum = temp.substring(temp.lastIndexOf('/')+1 , (temp.lastIndexOf('.')));
 				processFile(listArray[i],fileNum);
 			}
-			
 		}
 		catch (IOException e )
 		{
@@ -94,7 +85,7 @@ public class Coreference
 	 */
 	public static void processFile(String file, String fileNum) throws Exception
 	{
-		//reset currCoRefs  and other lists for each file
+		//reset currCoRefs and other lists for each file
 		currCoRefs = new ArrayList<Tag>();
 		npChunks = new ArrayList<String>();
 		nerList = new ArrayList<String>();
@@ -138,7 +129,6 @@ public class Coreference
 			
 			//parse using builder to get DOM representation of the XML file
 			dom = db.parse(fileName);
-			
 		}
 		catch(ParserConfigurationException pce) 
 		{
@@ -182,32 +172,11 @@ public class Coreference
 		}
 		Node categories = docEle.getElementsByTagName("COREF").item(0);
 		NodeList categorieslist = categories.getChildNodes();
-		while (categorieslist.getLength() > 0) {
+		while (categorieslist.getLength() > 0) 
+		{
 		    Node node = categorieslist.item(0);
 		    node.getParentNode().removeChild(node);
 		}
-		try
-		{
-			//code to try and print out full xml for testing
-			/*
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-			//initialize StreamResult with File object to save to file
-			StreamResult result = new StreamResult(new StringWriter());
-			DOMSource source = new DOMSource(docEle);
-			transformer.transform(source, result);
-
-			String xmlString = result.getWriter().toString();
-			//System.out.println(xmlString);
-			 * 
-			 */
-		}
-		catch(Exception e)
-		{
-			
-		}
-		
 	}
 	
 	/**
@@ -237,46 +206,33 @@ public class Coreference
 			
 			//throw all lines into one ginormous string
 			StringBuilder builder = new StringBuilder();
-			for (String st: arrayLines) {
+			for (String st: arrayLines) 
+			{
 			    builder.append(st).append(' ');
 			}
-			//builder.deleteCharAt(builder.length());
-
+			
 			wholeFile = builder.toString();
 				
 			//now loop through our coref list and remove them out of the giant string
-			//System.out.println(wholeFile);
-			//now loop through our coref list and remove them out of the giant string
+			//and replaces it with id= and the corefs id use later for String matching
 			for(Tag t: currCoRefs)
 			{
 				String tempTag= t.tagPrinter();
-				wholeFile=wholeFile.replace(tempTag, "");
-				//System.out.println("Take2:"+wholeFile);
+				wholeFile=wholeFile.replace(tempTag, "id="+t.getId());
 			}
 			wholeFile=wholeFile.replace("null", "");
-			//System.out.println("Take2:"+wholeFile);
-				
-			//Now add all words from wholeFile and put into the npChunks list so we can use it 
-			//in the stringMatcher method below
-			//String[] parts = wholeFile.split("\\s{3,}");
-			//for(String p : parts) {
-				//System.out.println(p);
-				//if(!p.equals(" "))
-				//{
+			
+			//at this point each word is pulled out as a chunk
 			StringTokenizer parser = new StringTokenizer(wholeFile, " //");
 			while(parser.hasMoreTokens())
 			{
 				String temp = parser.nextToken();
 				npChunks.add(temp);
 			}					
-				//System.out.println(p);
-				//}
-			//}
 		}
 		catch (IOException e )
 		{
 			System.out.println(e.getMessage());
-			
 		}
 	}
 	
@@ -284,38 +240,42 @@ public class Coreference
 	
 	/**
 	 * Do string matching for the given corefs once we have the given chunks
-	 * 
-	 * @param file
 	 */
 	private static void stringMatcher()
 	{
-		String id="A";
-		
+		// Loop through the currCoRefs tag list 
 		for(int i = 0; i < currCoRefs.size(); i++)
 		{
-			Tag tempTag = currCoRefs.get(i);
-			if(i == 0){}
+			Tag tempTag = currCoRefs.get(i); // Grab current tag
+			if(i == 0){} // do nothing for the first element
 			else
 			{
-				ArrayList<String> currList = tempTag.getNPList();
+				ArrayList<String> currList = tempTag.getNPList(); //Get current tag noun phrase list
 				ArrayList<String> prevList;
+				//Loop through previous coref tags from the tag just previous back to the first of the list
 				for(int j = i-1; j > 0; j--)
 				{
-					Tag pig = currCoRefs.get(j);
-					prevList = pig.getNPList();
+					Tag pig = currCoRefs.get(j); //grab the prev tag
+					prevList = pig.getNPList(); //grab prev tag's npList
+					
+					// loop for the current tags np list
 					for(int k = 0; k < currList.size(); k++)
 					{
+						// loop for the prev tags np list
 						for(int g = 0; g < prevList.size(); g++)
 						{
+							// checks if the current word from each list is  equal and if the current
+							// tags reference is null
 							if(currList.get(k).equals(prevList.get(g)) && tempTag.getRef() == null)
 							{
+								// checks if the current word is not the, a, of, to, for
 								if(!currList.get(k).toLowerCase().equals("the") && 
 										!currList.get(k).toLowerCase().equals("a") && 
 										!currList.get(k).toLowerCase().equals("of") &&
 										!currList.get(k).toLowerCase().equals("to") &&
 										!currList.get(k).toLowerCase().equals("for"))
 								{
-									tempTag.setRef(pig.getId());
+									tempTag.setRef(pig.getId()); // set current tags ref to prev tags id
 								}
 							}
 						}
@@ -323,21 +283,47 @@ public class Coreference
 				}
 			}
 		}
-		//create new corefs if we have a match on np's not in corefs already
-		//if(npChunks.contains(t.getNp()))
-		//{
-			//increment our ids
-			//if(!(id.equals("A")))
-			//{
-				//id.replace(id.charAt(0), (char) (id.charAt(0)+1));
-			//}
-			//add in the new coref Tag and associate existing with the ID for the new tag
-			//currCoRefs.add(new Tag(id,t.getNp()));
-			//t.setRef(id);
-		//}
 		
+		String id="A"; //starting string for new tag ids
 		
-		
+		// loop for the coref tags
+		for(int i = 0; i < currCoRefs.size(); i++)
+		{
+			if(currCoRefs.get(i).getRef() == null) //check if current tags ref = null
+			{
+				// find the position to start searching for previous references
+				String currTagId = "id=" + currCoRefs.get(i).getId();
+				ArrayList<String> currNPList = currCoRefs.get(i).getNPList();
+				int pos = 0;
+				for (int j = 0; j < npChunks.size(); j++) {
+					String temp = npChunks.get(j);
+					if (currTagId.equals(temp)) {
+						pos = j - 1;
+					}
+				}
+				// string matching coref tags with all previous words
+				for (int g = 0; g < currNPList.size(); g++) 
+				{
+					String tempCurrNP = currNPList.get(g);
+					for (int k = pos; k >= 0; k--) 
+					{
+						if (tempCurrNP.equals(npChunks.get(k))) 
+						{
+							if(!tempCurrNP.toLowerCase().equals("the") &&
+									!tempCurrNP.toLowerCase().equals("a") &&
+									!tempCurrNP.toLowerCase().equals("of") &&
+									!tempCurrNP.toLowerCase().equals("to") &&
+									!tempCurrNP.toLowerCase().equals("for"))
+							{
+								currCoRefs.add(new Tag(id,npChunks.get(k))); //create new tag
+								currCoRefs.get(i).setRef(id); //set currents tags ref
+								id += "A"; // make new unique tag
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	public static void nerFunction(String file) throws IOException
@@ -352,10 +338,7 @@ public class Coreference
 	    	for (CoreLabel word : sentence) 
 	    	{
 	    		//throw this in a list to use later 
-	            //System.out.print(word.word() + '/' + word.get(AnswerAnnotation.class) + ' ');
-	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class) + ' ');
-	            
-	            
+	            nerList.add(word.word()+'/'+word.getString(AnswerAnnotation.class));
 	    	}
 	    } 
 	}
@@ -363,106 +346,86 @@ public class Coreference
 	/**
 	 * Begin to try and match coreferences
 	 */
-	private static void coReferNER()
-	{		
-		for(int i = 0; i < currCoRefs.size(); i++)
-		{
+	private static void coReferNER() {
+		for (int i = 0; i < currCoRefs.size(); i++) {
 			Tag tempTag = currCoRefs.get(i);
-			
-			
-			if(i == 0){}
-			else
-			{
-				int cur=0;
-				int prev=0;
+
+			if (i == 0) {
+			} else {
+				int cur = 0;
+				int prev = 0;
 				ArrayList<String> currList = tempTag.getNPList();
 				ArrayList<String> prevList;
-				for(int j = i-1; j > 0; j--)
-				{
+				for (int j = i - 1; j > 0; j--) {
 					Tag pig = currCoRefs.get(j);
 					prevList = pig.getNPList();
-					for(int k = 0; k < currList.size(); k++)
-					{
-						for(int g = 0; g < prevList.size(); g++)
-						{
-							String curNerTemp="";
-							String prevNerTemp="";
-							
-							//grab word place in NERList
+					for (int k = 0; k < currList.size(); k++) {
+						for (int g = 0; g < prevList.size(); g++) {
+							String curNerTemp = "";
+							String prevNerTemp = "";
 
-							for(int y=0; y<nerList.size(); y++)
-							{
-								if(nerList.get(y).contains(currList.get(k)))
+							// grab word place in NERList
+
+							for (int y = 0; y < nerList.size(); y++) {
+								if (nerList.get(y).contains(currList.get(k))) 
 								{
-									curNerTemp=nerList.get(y);
-									//System.out.println(curNerTemp);
+									curNerTemp = nerList.get(y);
 								}
-								cur=nerList.indexOf(curNerTemp);
-								//System.out.println(cur);
+								cur = nerList.indexOf(curNerTemp);
 								
-								if(nerList.get(y).contains(prevList.get(g)))
+								if (nerList.get(y).contains(prevList.get(g))) 
 								{
-									prevNerTemp=nerList.get(y);
-									//System.out.println(prevNerTemp);
+									prevNerTemp = nerList.get(y);
 								}
-								prev=nerList.indexOf(prevNerTemp);
-								//System.out.println(prev);
-								
-								
+								prev = nerList.indexOf(prevNerTemp);
 							}
-							
-							String curClassType="";
-							String prevClassType="";
-							
-							
-							
-							//grab current word's info
-							if(cur>=0)
-							{
-							String bigCurWord =nerList.get(cur);
-							String curWord =bigCurWord.substring(0, bigCurWord.indexOf("/"));
-							curClassType=bigCurWord.substring(bigCurWord.indexOf("/"), bigCurWord.length());
+
+							String curClassType = "";
+							String prevClassType = "";
+
+							// grab current word's info
+							if (cur >= 0) {
+								String bigCurWord = nerList.get(cur);
+								bigCurWord.substring(0, bigCurWord.indexOf("/"));
+								curClassType = bigCurWord.substring(
+										bigCurWord.indexOf("/")+1,
+										bigCurWord.length());
 							}
-							
-							//grab Prev word's info
-							if(prev>=0)
-							{
-							String bigPrevWord =nerList.get(prev);
-							String prevWord =bigPrevWord.substring(0, bigPrevWord.indexOf("/"));
-							prevClassType=bigPrevWord.substring(bigPrevWord.indexOf("/"), bigPrevWord.length());
+
+							// grab Prev word's info
+							if (prev >= 0) {
+								String bigPrevWord = nerList.get(prev);
+								bigPrevWord.substring(0, bigPrevWord.indexOf("/"));
+								prevClassType = bigPrevWord.substring(
+										bigPrevWord.indexOf("/")+1,
+										bigPrevWord.length());
 							}
-							
-							if(curClassType.equals("PERSON")&&prevClassType.equals("PERSON") && tempTag.getRef() == null)
+													
+							if (curClassType.equals("PERSON")
+									&& prevClassType.equals("PERSON")
+									&& tempTag.getRef() == null) 
 							{
-								if(!currList.get(k).toLowerCase().equals("the") && 
-										!currList.get(k).toLowerCase().equals("a") && 
-										!currList.get(k).toLowerCase().equals("of") &&
-										!currList.get(k).toLowerCase().equals("to") &&
-										!currList.get(k).toLowerCase().equals("for"))
-								{
-									tempTag.setRef(pig.getId());
-								}
+								tempTag.setRef(pig.getId());
 							}
-							
-							if(curClassType.equals("ORGANIZATION")&&prevClassType.equals("ORGANIZATION") && tempTag.getRef() == null)
+
+							if (curClassType.equals("ORGANIZATION")
+									&& prevClassType.equals("ORGANIZATION")
+									&& tempTag.getRef() == null) 
 							{
-								if(!currList.get(k).toLowerCase().equals("the") && 
-										!currList.get(k).toLowerCase().equals("a") && 
-										!currList.get(k).toLowerCase().equals("of") &&
-										!currList.get(k).toLowerCase().equals("to") &&
-										!currList.get(k).toLowerCase().equals("for"))
-								{
-									tempTag.setRef(pig.getId());
-								}
+								tempTag.setRef(pig.getId());
+							}
+							if (curClassType.equals("LOCATION")
+									&& prevClassType.equals("LOCATION")
+									&& tempTag.getRef() == null) 
+							{
+								tempTag.setRef(pig.getId());
 							}
 						}
 					}
 				}
 			}
 		}
-		
-		
-		
+
 	}
 	
 	/**
